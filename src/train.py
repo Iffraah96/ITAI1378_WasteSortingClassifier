@@ -1,27 +1,27 @@
-IMG_SIZE = (224, 224)
-BATCH_SIZE = 32
-SEED = 42
+callbacks = [
+    EarlyStopping(
+        monitor="val_loss",
+        patience=5,
+        restore_best_weights=True
+    ),
+    ReduceLROnPlateau(
+        monitor="val_loss",
+        factor=0.2,
+        patience=3,
+        min_lr=1e-7
+    ),
+    ModelCheckpoint(
+        "best_waste_mobilenetv2_model.keras",
+        monitor="val_accuracy",
+        save_best_only=True
+    )
+]
 
-train_ds = tf.keras.utils.image_dataset_from_directory(
-    DATASET_PATH,
-    validation_split=0.2,
-    subset="training",
-    seed=SEED,
-    image_size=IMG_SIZE,
-    batch_size=BATCH_SIZE
+EPOCHS = 20
+
+history = model.fit(
+    train_ds,
+    validation_data=val_ds,
+    epochs=EPOCHS,
+    callbacks=callbacks
 )
-
-val_ds = tf.keras.utils.image_dataset_from_directory(
-    DATASET_PATH,
-    validation_split=0.2,
-    subset="validation",
-    seed=SEED,
-    image_size=IMG_SIZE,
-    batch_size=BATCH_SIZE
-)
-
-class_names = train_ds.class_names
-num_classes = len(class_names)
-
-print("Class names:", class_names)
-print("Number of classes:", num_classes)
